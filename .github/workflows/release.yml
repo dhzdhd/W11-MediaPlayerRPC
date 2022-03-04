@@ -19,12 +19,14 @@ jobs:
 
       - name: Build
         run: |
-          cd ./MediaPlayerRPC/
+          cd .\MediaPlayerRPC\
           dotnet build -c Release
 
-#      - name: Create zip
-#        run: |
-#          7z -tZip a exec\SecureFolder.zip build\windows\runner\Release\
+      - name: Create zip
+        run: |
+          cd .\MediaPlayerRPC\
+          mkdir App
+          7z -tZip a App\MediaPlayerRPC.zip bin\Release\net6.0-windows10.0.22000.0\*
 
       - name: Create release
         uses: softprops/action-gh-release@v1
@@ -34,7 +36,7 @@ jobs:
           tag_name: v0.0.1
           prerelease: true
           generate_release_notes: true
-          files: ./MediaPlayerRPC/bin/Release/*
+          files: .\MediaPlayerRPC\App\*
           body_path: CHANGELOG.md
           token: ${{ secrets.GITHUB_TOKEN }}
         env:

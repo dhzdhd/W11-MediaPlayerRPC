@@ -6,6 +6,7 @@ open DiscordRPC
 open DiscordRPC.Logging
 open DiscordRPC.Message
 open InfoFetcher
+open Windows.Media.Control
 
 module Main =
     let onReadyEventHandler (_: ReadyMessage) =
@@ -17,29 +18,38 @@ module Main =
         
         let button = Button ()
         button.Label <- "Watch on YouTube"
-        button.Url <- "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
         
         let presence = RichPresence ()
-        presence.Timestamps <- Timestamps (DateTime.Now, Nullable DateTime.UtcNow)
         presence.Assets <- assets
         presence.Buttons <- [| button |]
         
         
         match getTrackInfo () with
         | Yes res ->
-            presence.Details <- res.Title
-            assets.LargeImageText <- $"{res.Album} - {res.Artist}"
+            presence.Timestamps <- Timestamps ( DateTime.UtcNow + res.CurrentTime, Nullable (DateTime.UtcNow + res.EndTime))
+            presence.Details <- $"{res.Artist} - {res.Title}"
+            assets.LargeImageText <- $"{res.Album}"
+            button.Url <- $"https://www.youtube.com/results?search_query={res.Artist.Replace (' ', '+')}+{res.Title.Replace (' ', '+')}"
+            
+            match res.PlaybackStatus with
+            | GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing ->
+                assets.SmallImageKey <- "play"
+                assets.SmallImageText <- "Playing"
+            | GlobalSystemMediaTransportControlsSessionPlaybackStatus.Paused ->
+                assets.SmallImageKey <- "pause"
+                assets.SmallImageText <- "Paused"
+            | _ -> ()
             
             client.SetPresence presence
         | No -> ()
         
-        Async.Sleep 3000 |> Async.RunSynchronously
+        Async.Sleep 1000 |> Async.RunSynchronously
         setPresence client
         
-    let checkInitialized (client: DiscordRpcClient) =
-        match client.IsInitialized with
-        | true -> setPresence client
-        | false -> printfn "Stopped"
+//    let checkInitialized (client: DiscordRpcClient) =
+//        match client.IsInitialized with
+//        | true -> setPresence client
+//        | false -> printfn "Stopped"
     
     [<EntryPoint>]
     let main argv = 
@@ -48,9 +58,7 @@ module Main =
         client.OnReady.Add onReadyEventHandler
         
         match client.Initialize () with
-        | true -> printfn "success"
-        | false -> printfn "failure"
-        
-        checkInitialized client
+        | true -> setPresence client
+        | false -> printfn "Failed to start"
         
         0

@@ -7,7 +7,11 @@ open Windows.Media.Control
 type Info =
     { Title: string
       Artist: string
-      Album: string }
+      Album: string
+      StartTime: TimeSpan
+      EndTime: TimeSpan
+      CurrentTime: TimeSpan
+      PlaybackStatus: GlobalSystemMediaTransportControlsSessionPlaybackStatus }
     
 type PlayerIsOpen =
     | Yes of Info
@@ -16,21 +20,28 @@ type PlayerIsOpen =
 module InfoFetcher =
     let getTrackInfo () =
         if not ((Process.GetProcessesByName "Microsoft.Media.Player") |> Array.isEmpty) then
-            let result = GlobalSystemMediaTransportControlsSessionManager.RequestAsync().GetAwaiter().GetResult().GetCurrentSession().TryGetMediaPropertiesAsync().GetAwaiter().GetResult()
+            let session = GlobalSystemMediaTransportControlsSessionManager.RequestAsync().GetAwaiter().GetResult().GetCurrentSession()
+            let songInfo = session.TryGetMediaPropertiesAsync().GetAwaiter().GetResult()
+            let timelineInfo = session.GetTimelineProperties()
+            let statusInfo = session.GetPlaybackInfo()
+
             let info =
                 { Title =
-                      match result.Title with
+                      match songInfo.Title with
                       | "" -> "Unknown Song"
                       | x -> x
                   Artist =
-                      match result.AlbumArtist with
+                      match songInfo.Artist with
                       | "" -> "Unknown Artist"
                       | x -> x
                   Album =
-                      match result.AlbumTitle with
+                      match songInfo.AlbumTitle with
                       | "" -> "Unknown Album"
-                      | x -> x }
-            printfn $"{info.Album} {info.Artist} {info.Title}"
+                      | x -> x
+                  StartTime = timelineInfo.StartTime
+                  EndTime = timelineInfo.EndTime
+                  CurrentTime = timelineInfo.Position
+                  PlaybackStatus = statusInfo.PlaybackStatus }
         
             Yes info
         else
