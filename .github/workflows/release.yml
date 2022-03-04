@@ -21,6 +21,7 @@ jobs:
         run: |
           cd ./MediaPlayerRPC/
           dotnet build -c Release
+          Rename-Item -Path "./MediaPlayerRPC/bin/Release/net6.0-windows10.0.22000.0" -NewName "MediaPlayerRPC"
 
 #      - name: Create zip
 #        run: |
@@ -34,7 +35,7 @@ jobs:
           tag_name: v0.0.1
           prerelease: true
           generate_release_notes: true
-          files: ./MediaPlayerRPC/bin/Release/net6.0-windows10.0.22000.0/*
+          files: ./MediaPlayerRPC/bin/Release/*
           body_path: CHANGELOG.md
           token: ${{ secrets.GITHUB_TOKEN }}
         env:
