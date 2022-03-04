@@ -26,7 +26,8 @@ jobs:
         run: |
           cd .\MediaPlayerRPC\
           mkdir App
-          7z -tZip a App\MediaPlayerRPC.zip bin\Release\net6.0-windows10.0.22000.0\*
+          cd .\bin\Release\net6.0-windows10.0.22000.0
+          7z -tZip a ..\..\..\App\MediaPlayerRPC.zip .\*
 
       - name: Create release
         uses: softprops/action-gh-release@v1
