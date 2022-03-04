@@ -10,7 +10,6 @@ open InfoFetcher
 module Main =
     let onReadyEventHandler (_: ReadyMessage) =
         printfn "Ready"
-        ()
         
     let rec setPresence (client: DiscordRpcClient) =
         let assets = Assets ()
