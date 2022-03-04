@@ -21,7 +21,6 @@ jobs:
         run: |
           cd ./MediaPlayerRPC/
           dotnet build -c Release
-          Rename-Item bin/Release/net6.0-windows10.0.22000.0 bin/Release/MediaPlayerRPC
 
 #      - name: Create zip
 #        run: |
