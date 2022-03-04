@@ -12,7 +12,7 @@
 
 ### How to make it work
 <Deep change the name for the above h3 idk what to keep so i kept something>
-1.  git clone 
+1. git clone 
 2. cd to MediaPlayerRPC
 3. dotnet run [this is command and you need to run in above location]
 
