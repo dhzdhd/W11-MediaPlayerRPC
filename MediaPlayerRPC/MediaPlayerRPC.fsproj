@@ -9,12 +9,17 @@
     <ItemGroup>
         <Compile Include="Constants.fs" />
         <Compile Include="InfoFetcher.fs" />
+        <Compile Include="Presence.fs" />
         <Compile Include="Program.fs" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <ProjectReference Include="..\MediaPlayerRPCApp\MediaPlayerRPCApp.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="DiscordRichPresence" Version="1.0.175" />
-      <PackageReference Include="Elmish.WPF" Version="4.0.0-beta-42" />
+        <PackageReference Include="DiscordRichPresence" Version="1.0.175" />
+        <PackageReference Include="Elmish.WPF" Version="4.0.0-beta-42" />
     </ItemGroup>
 
 </Project>

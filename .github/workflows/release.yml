@@ -2,7 +2,7 @@
 
 on:
   push:
-    branches: [ master ]
+    branches: [ stable ]
 
   workflow_dispatch:
 
