@@ -104,9 +104,8 @@ type App() =
         | _ -> ()
 
 module Program =
-
     [<EntryPoint>]
-    let main(args: string[]) =
+    let main (args: string[]) =
         AppBuilder
             .Configure<App>()
             .UsePlatformDetect()
