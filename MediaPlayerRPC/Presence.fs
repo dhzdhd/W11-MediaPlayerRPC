@@ -1,4 +1,4 @@
-namespace DiscordRPC
+namespace MediaPlayerRPC
 
 open System
 open System.Threading

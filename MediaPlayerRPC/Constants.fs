@@ -1,4 +1,4 @@
-﻿namespace DiscordRPC
+﻿namespace MediaPlayerRPC
 
 module Constants =
     let supportedFileTypes = [

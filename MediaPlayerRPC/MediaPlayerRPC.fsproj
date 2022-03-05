@@ -12,14 +12,12 @@
         <Compile Include="Presence.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
-    
-    <ItemGroup>
-        <ProjectReference Include="..\MediaPlayerRPCApp\MediaPlayerRPCApp.csproj" />
-    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="DiscordRichPresence" Version="1.0.175" />
-        <PackageReference Include="Elmish.WPF" Version="4.0.0-beta-42" />
+        <PackageReference Include="JaggerJo.Avalonia.FuncUI" Version="0.5.0-beta" />
+        <PackageReference Include="JaggerJo.Avalonia.FuncUI.DSL" Version="0.5.0-beta" />
+        <PackageReference Include="JaggerJo.Avalonia.FuncUI.Elmish" Version="0.5.0-beta" />
     </ItemGroup>
 
 </Project>
