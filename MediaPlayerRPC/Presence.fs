@@ -23,7 +23,6 @@ module Main =
         presence.Assets <- assets
         presence.Buttons <- [| button |]
         
-        
         match getTrackInfo () with
         | Yes res ->
             presence.Timestamps <- Timestamps ( DateTime.UtcNow + res.CurrentTime, Nullable (DateTime.UtcNow + res.EndTime))
@@ -51,13 +50,11 @@ module Main =
 //        | true -> setPresence client
 //        | false -> printfn "Stopped"
     
-    let presence = 
+    let presence () = 
         let mutable client = new DiscordRpcClient "948624514546270208" 
         client.Logger <- ConsoleLogger (LogLevel.Warning, true)
         client.OnReady.Add onReadyEventHandler
         
         match client.Initialize () with
-        | true -> setPresence client
+        | true -> printfn "Success"; setPresence client
         | false -> printfn "Failed to start"
-        
-        0

@@ -11,7 +11,7 @@
         <Compile Include="InfoFetcher.fs" />
         <Compile Include="Presence.fs" />
         <Compile Include="Program.fs" />
-        <Content Include="assets\icon.svg" />
+        <Content Include="Assets\icon.svg" />
     </ItemGroup>
 
     <ItemGroup>

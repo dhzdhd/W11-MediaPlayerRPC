@@ -32,7 +32,10 @@ module InfoFetcher =
                       | x -> x
                   Artist =
                       match songInfo.Artist with
-                      | "" -> "Unknown Artist"
+                      | "" ->
+                          match songInfo.AlbumArtist with
+                          | "" -> "Unknown Artist"
+                          | x -> x
                       | x -> x
                   Album =
                       match songInfo.AlbumTitle with
