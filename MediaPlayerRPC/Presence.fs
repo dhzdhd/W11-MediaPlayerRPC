@@ -1,14 +1,13 @@
 namespace MediaPlayerRPC
 
 open System
-open System.Threading
 open DiscordRPC
 open DiscordRPC.Logging
 open DiscordRPC.Message
 open InfoFetcher
 open Windows.Media.Control
 
-module Main =
+module Presence =
     let onReadyEventHandler (_: ReadyMessage) =
         printfn "Ready"
         

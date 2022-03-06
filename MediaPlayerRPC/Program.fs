@@ -1,7 +1,5 @@
 ﻿namespace MediaPlayerRPC
 
-open System.Diagnostics
-open System.Threading.Tasks
 open Avalonia
 open Avalonia.FuncUI.Components.Hosts
 open Avalonia.Themes.Fluent
@@ -10,6 +8,7 @@ open Avalonia.FuncUI.DSL
 open Avalonia.FuncUI
 open Avalonia.FuncUI.Elmish
 open Avalonia.Controls.ApplicationLifetimes
+open Microsoft.FSharp.Control
 
 module Counter =
     open Avalonia.Controls
@@ -17,18 +16,15 @@ module Counter =
     
     type State =
         { isRunning: bool }
+        
     let init = { isRunning = false }
-    
-    type PresenceState =
-        | Running
-        | Stopped
         
     type Msg =
         | Switch
 
     let processTask =
-        task {
-            Main.presence()
+        async {
+            Presence.presence()
         }
     
     let update (msg: Msg) (state: State) : State =
@@ -46,7 +42,7 @@ module Counter =
                     Button.horizontalAlignment HorizontalAlignment.Center
                     Button.margin (0, 20)
                     Button.onClick (fun _ ->
-                        processTask |> Task.WaitAll
+                        processTask |> Async.Start
                         dispatch Switch )
                 ]
                 TextBlock.create [
