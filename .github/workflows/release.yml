@@ -20,7 +20,7 @@ jobs:
       - name: Build
         run: |
           cd .\MediaPlayerRPC\
-          dotnet build -c Release
+          dotnet build --sc -c Release
 
       - name: Create zip
         run: |
