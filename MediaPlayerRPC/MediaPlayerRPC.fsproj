@@ -22,4 +22,8 @@
         <PackageReference Include="JaggerJo.Avalonia.FuncUI.Elmish" Version="0.5.0-beta" />
     </ItemGroup>
 
+    <ItemGroup>
+        <AvaloniaResource Include="Assets\*" />
+    </ItemGroup>
+    
 </Project>

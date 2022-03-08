@@ -1,8 +1,12 @@
 ﻿namespace MediaPlayerRPC
 
+open System
+open System.ComponentModel
 open Avalonia
+open Avalonia.Controls
 open Avalonia.FuncUI.Components.Hosts
 open Avalonia.Themes.Fluent
+open DiscordRPC.Message
 open Elmish
 open Avalonia.FuncUI.DSL
 open Avalonia.FuncUI
@@ -50,13 +54,8 @@ module Counter =
                     TextBlock.fontSize 48.0
                     TextBlock.verticalAlignment VerticalAlignment.Center
                     TextBlock.horizontalAlignment HorizontalAlignment.Center
-                    TextBlock.text $"{state.isRunning}"
+                    TextBlock.text $"""{if state.isRunning then "Running" else "Stopped"}"""
                 ]
-//                TextBox.create [
-//                    TextBox.dock Dock.Bottom
-//                    TextBox.text (string state.isRunning)
-//                    TextBox.horizontalAlignment HorizontalAlignment.Stretch
-//                ]
             ]
         ]
 
@@ -65,7 +64,7 @@ type MainWindow() as this =
     do
         base.Title <- "Media Player RPC"
         base.Height <- 400.0
-        base.Width <- 400.0    
+        base.Width <- 400.0
       
         //this.VisualRoot.VisualRoot.Renderer.DrawFps <- true
         //this.VisualRoot.VisualRoot.Renderer.DrawDirtyRects <- true

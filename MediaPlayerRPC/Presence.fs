@@ -24,7 +24,8 @@ module Presence =
         
         match getTrackInfo () with
         | Yes res ->
-            presence.Timestamps <- Timestamps ( DateTime.UtcNow + res.CurrentTime, Nullable (DateTime.UtcNow + res.EndTime))
+            printfn $"{DateTime.Now + res.CurrentTime} , {DateTime.Now + res.EndTime}"
+            presence.Timestamps <- Timestamps ( DateTime.UtcNow + res.CurrentTime, (DateTime.UtcNow + res.EndTime))
             presence.Details <- $"{res.Artist} - {res.Title}"
             assets.LargeImageText <- $"{res.Album}"
             button.Url <- $"https://www.youtube.com/results?search_query={res.Artist.Replace (' ', '+')}+{res.Title.Replace (' ', '+')}"
@@ -39,7 +40,7 @@ module Presence =
             | _ -> ()
             
             client.SetPresence presence
-        | No -> ()
+        | No -> client.ClearPresence ()
         
         Async.Sleep 1000 |> Async.RunSynchronously
         setPresence client
