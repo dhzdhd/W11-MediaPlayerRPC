@@ -13,10 +13,15 @@
         <Compile Include="Presence.fs" />
         <Compile Include="Program.fs" />
         <Content Include="Assets\icon.svg" />
+        <Content Include="settings.json" />
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="DiscordRichPresence" Version="1.0.175" />
+        <PackageReference Include="FSharp.Data.Json" Version="1.0.0" />
+        <PackageReference Include="FSharp.Data.JsonPath" Version="1.0.1" />
+        <PackageReference Include="FSharp.Data.JsonProvider" Version="0.5.0" />
+        <PackageReference Include="FSharp.Data.JsonSchema" Version="2.0.0" />
         <PackageReference Include="JaggerJo.Avalonia.FuncUI" Version="0.5.0-beta" />
         <PackageReference Include="JaggerJo.Avalonia.FuncUI.DSL" Version="0.5.0-beta" />
         <PackageReference Include="JaggerJo.Avalonia.FuncUI.Elmish" Version="0.5.0-beta" />

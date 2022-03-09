@@ -44,14 +44,9 @@ module Presence =
         
         Async.Sleep 1000 |> Async.RunSynchronously
         setPresence client
-        
-//    let checkInitialized (client: DiscordRpcClient) =
-//        match client.IsInitialized with
-//        | true -> setPresence client
-//        | false -> printfn "Stopped"
     
     let presence () = 
-        let mutable client = new DiscordRpcClient "948624514546270208" 
+        let client = new DiscordRpcClient "948624514546270208" 
         client.Logger <- ConsoleLogger (LogLevel.Warning, true)
         client.OnReady.Add onReadyEventHandler
         
