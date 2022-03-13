@@ -1,5 +1,6 @@
 ﻿namespace MediaPlayerRPC
 
+open System.Threading.Tasks
 open Avalonia
 open Avalonia.Controls
 open Avalonia.FuncUI.Components.Hosts
@@ -13,11 +14,8 @@ open Avalonia.Controls.ApplicationLifetimes
 open FSharp.Data
 open MediaPlayerRPC
 
-module Counter =
-    [<Literal>]
-    let ResolutionFolder = __SOURCE_DIRECTORY__
-    
-    let settings = JsonValue.Load (ResolutionFolder + "./settings.json")
+module MainWindow =
+    let settings = JsonValue.Load $"{__SOURCE_DIRECTORY__}./settings.json"
     
     type State =
         { isRunning: bool
@@ -33,21 +31,31 @@ module Counter =
         | SwitchRunning
         | SetRunOnStartup
         | HideOnStart
-
-    let processTask =
-        async {
-            Presence.presence ()
-        }
+        | Hide
     
-    let update (msg: Msg) (state: State) : State =
+    let update (msg: Msg) (state: State) (windowService: HostWindow) : State =
         match msg with
         | SwitchRunning ->
+            let isRunning = not state.isRunning
+            printfn $"{isRunning}"
+            async {
+                match isRunning with
+                | true ->
+                    printfn "running"
+                    while isRunning do Presence.setPresence ()
+                | false ->
+                    printfn "stopped"
+                    Presence.clearPresence ()
+            } |> Async.Start
             { state with isRunning = not state.isRunning }
         | SetRunOnStartup ->
             { state with runOnStartup = not state.runOnStartup }
         | HideOnStart ->
             { state with hideOnStart = not state.hideOnStart }
-    
+        | Hide ->
+            windowService.Hide ()
+            state
+        
     let view (state: State) dispatch =
         DockPanel.create [
             DockPanel.children [
@@ -64,27 +72,15 @@ module Counter =
                             Button.content (if state.isRunning then "Stop" else "Start")
                             Button.verticalAlignment VerticalAlignment.Center
                             Button.horizontalAlignment HorizontalAlignment.Center
-                            Button.onClick (fun _ ->
-                                processTask |> Async.Start
-                                dispatch SwitchRunning )
+                            Button.onClick (fun _ -> dispatch SwitchRunning )
                         ]
                         Button.create [
                             Button.dock Dock.Bottom
+                            Button.isVisible state.isRunning
                             Button.content "Hide"
                             Button.verticalAlignment VerticalAlignment.Center
                             Button.horizontalAlignment HorizontalAlignment.Center
-                            Button.onClick (fun _ ->
-                                processTask |> Async.Start
-                                dispatch SwitchRunning )
-                        ]
-                        Button.create [
-                            Button.dock Dock.Bottom
-                            Button.content "Exit"
-                            Button.verticalAlignment VerticalAlignment.Center
-                            Button.horizontalAlignment HorizontalAlignment.Center
-                            Button.onClick (fun _ ->
-                                processTask |> Async.Start
-                                dispatch SwitchRunning )
+                            Button.onClick (fun _ -> dispatch Hide )
                         ]
                     ]
                 ]
@@ -111,9 +107,7 @@ module Counter =
                             CheckBox.verticalAlignment VerticalAlignment.Center
                             CheckBox.isChecked state.hideOnStart
                             CheckBox.margin (2, 0)
-                            CheckBox.onClick (fun _ ->
-                                printfn "e"
-                                dispatch HideOnStart)
+                            CheckBox.onClick (fun _ -> dispatch HideOnStart)
                         ]
                     ]
                 ]
@@ -134,16 +128,19 @@ type MainWindow() as this =
         base.Height <- 400.0
         base.Width <- 400.0
 
-//        base.Hide ()
-//        base.Close ()
 #if DEBUG     
         this.VisualRoot.VisualRoot.Renderer.DrawFps <- true
         this.VisualRoot.VisualRoot.Renderer.DrawDirtyRects <- true
 #endif
-        Elmish.Program.mkSimple (fun () -> Counter.init) Counter.update Counter.view
+
+        let update state msg =
+            MainWindow.update state msg this
+        
+        Elmish.Program.mkSimple (fun () -> MainWindow.init) update MainWindow.view
         |> Program.withHost this
         |> Program.withConsoleTrace
         |> Program.run
+
         
 type App() =
     inherit Application()
@@ -156,7 +153,6 @@ type App() =
         | :? IClassicDesktopStyleApplicationLifetime as desktopLifetime ->
             let mainWindow = MainWindow()
             desktopLifetime.MainWindow <- mainWindow
-            desktopLifetime.ShutdownMode <- ShutdownMode.OnExplicitShutdown
         | _ -> ()
 
 module Program =
