@@ -45,7 +45,7 @@ module MainWindow =
                     while isRunning do Presence.setPresence ()
                 | false ->
                     printfn "stopped"
-                    Presence.clearPresence ()
+                    while not isRunning do Presence.clearPresence ()
             } |> Async.Start
             { state with isRunning = not state.isRunning }
         | SetRunOnStartup ->
