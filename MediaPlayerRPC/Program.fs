@@ -57,7 +57,6 @@ module MainWindow =
                     while isRunning do Presence.setPresence ()
                 | false ->
                     printfn "stopped"
-                    Presence.clearPresence ()
             } |> Async.Start
             { state with isRunning = not state.isRunning }
         | SetRunOnStartup x ->
@@ -107,7 +106,7 @@ module MainWindow =
                     StackPanel.children [
                         ToggleSwitch.create [
                             ToggleSwitch.dock Dock.Top
-                            ToggleSwitch.content "Run on OS startup"
+                            ToggleSwitch.content "Run on startup"
                             ToggleSwitch.horizontalAlignment HorizontalAlignment.Center
                             ToggleSwitch.verticalAlignment VerticalAlignment.Center
                             ToggleSwitch.isChecked state.runOnStartup

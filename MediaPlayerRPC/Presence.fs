@@ -22,30 +22,23 @@ module Presence =
     
     match client.Initialize () with
     | true -> printfn "Connection initialised successfully"
-    | false -> printfn "Connection failed!"
+    | false ->
+        printfn "Connection failed!"
+        exit 0
     
     assets.LargeImageKey <- "icon"
     
     button.Label <- "Play on YouTube"
             
     presence.Assets <- assets
-    presence.Buttons <- [| button |]
-
-    let clearPresence () =
-        client.Deinitialize ()
 
     let setPresence () =
         match getTrackInfo () with
         | Yes res ->
-            try
-                client.Initialize ()
-            with
-                | :? DiscordRPC.Exceptions.UninitializedException -> true
-            |> ignore 
-            
             printfn $"{DateTime.Now + res.StartTime}"
 //            presence.Timestamps <- Timestamps ( DateTime.UtcNow + res.CurrentTime)
             presence.Details <- $"{res.Artist} - {res.Title}"
+            presence.Buttons <- [| button |]
             assets.LargeImageText <- $"{res.Album}"
             button.Url <- $"https://www.youtube.com/results?search_query={res.Artist.Replace (' ', '+')}+{res.Title.Replace (' ', '+')}"
             
@@ -59,6 +52,13 @@ module Presence =
             | _ -> ()
             
             client.SetPresence presence
-        | No -> clearPresence ()
+        | No ->
+            presence.Details <- "Idle"
+            assets.SmallImageKey <- "idle"
+            assets.SmallImageText <- "Idle"
+            
+            presence.Buttons <- [||]
+            
+            client.SetPresence presence
         
         Async.Sleep 1000 |> Async.RunSynchronously
