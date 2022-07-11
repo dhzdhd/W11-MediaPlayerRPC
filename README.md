@@ -11,6 +11,7 @@ This app enables rich presence for the new Media Player shipped with the Februar
 ## Known bugs
 - Timestamps don't work yet.
 - Presence is not cleared on pressing `Stop` (although, it will clear on exiting the app).
+- The checkboxes do not work for now.
 
 ## Contributing
 Contributions are welcome! \
