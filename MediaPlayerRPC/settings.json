@@ -1,4 +1,5 @@
-﻿{
+{
+  "isRunning": false,
   "runOnStartup": false,
   "hideOnStart": true
 }

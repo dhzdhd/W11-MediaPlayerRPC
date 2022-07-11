@@ -1,5 +1,6 @@
 ﻿namespace MediaPlayerRPC
 
+open System.IO
 open System.Threading.Tasks
 open Avalonia
 open Avalonia.Controls
@@ -12,15 +13,26 @@ open Avalonia.FuncUI
 open Avalonia.FuncUI.Elmish
 open Avalonia.Controls.ApplicationLifetimes
 open FSharp.Data
+open FSharp.Data.JsonProvider
+open FSharp.Json
 open MediaPlayerRPC
 
 module MainWindow =
+    let path = $"{__SOURCE_DIRECTORY__}./settings.json"
     let settings = JsonValue.Load $"{__SOURCE_DIRECTORY__}./settings.json"
     
     type State =
         { isRunning: bool
           runOnStartup: bool
           hideOnStart: bool }
+        
+    let writeToJson (state: State) =
+        use writer = new StreamWriter(path)
+        task {
+            let json = Json.serialize state
+            do! writer.WriteLineAsync json
+        } |> Task.WaitAll 
+        ()
         
     let init =
         { isRunning = false
@@ -29,8 +41,8 @@ module MainWindow =
         
     type Msg =
         | SwitchRunning
-        | SetRunOnStartup
-        | HideOnStart
+        | SetRunOnStartup of bool
+        | SetHideOnStart of bool
         | Hide
     
     let update (msg: Msg) (state: State) (windowService: HostWindow) : State =
@@ -45,13 +57,15 @@ module MainWindow =
                     while isRunning do Presence.setPresence ()
                 | false ->
                     printfn "stopped"
-                    while not isRunning do Presence.clearPresence ()
+                    Presence.clearPresence ()
             } |> Async.Start
             { state with isRunning = not state.isRunning }
-        | SetRunOnStartup ->
-            { state with runOnStartup = not state.runOnStartup }
-        | HideOnStart ->
-            { state with hideOnStart = not state.hideOnStart }
+        | SetRunOnStartup x ->
+            let newState = { state with runOnStartup = x }
+            writeToJson newState
+            newState
+        | SetHideOnStart x ->
+            { state with hideOnStart = x }
         | Hide ->
             windowService.Hide ()
             state
@@ -89,34 +103,37 @@ module MainWindow =
                     StackPanel.orientation Orientation.Horizontal
                     StackPanel.horizontalAlignment HorizontalAlignment.Center
                     StackPanel.verticalAlignment VerticalAlignment.Center
-                    StackPanel.spacing 20
+                    StackPanel.spacing 60
                     StackPanel.children [
-                        CheckBox.create [
-                            CheckBox.dock Dock.Top
-                            CheckBox.content "Run on OS startup"
-                            CheckBox.horizontalAlignment HorizontalAlignment.Center
-                            CheckBox.verticalAlignment VerticalAlignment.Center
-                            CheckBox.isChecked state.runOnStartup
-                            CheckBox.margin (2, 0)
-                            CheckBox.onClick (fun _ -> dispatch SetRunOnStartup)
+                        ToggleSwitch.create [
+                            ToggleSwitch.dock Dock.Top
+                            ToggleSwitch.content "Run on OS startup"
+                            ToggleSwitch.horizontalAlignment HorizontalAlignment.Center
+                            ToggleSwitch.verticalAlignment VerticalAlignment.Center
+                            ToggleSwitch.isChecked state.runOnStartup
+                            ToggleSwitch.margin (2, 0)
+                            ToggleSwitch.onChecked (fun _ -> dispatch (SetRunOnStartup true))
+                            ToggleSwitch.onUnchecked (fun _ -> dispatch (SetRunOnStartup false))
                         ]
-                        CheckBox.create [
-                            CheckBox.dock Dock.Top
-                            CheckBox.content "Hide on start"
-                            CheckBox.horizontalAlignment HorizontalAlignment.Center
-                            CheckBox.verticalAlignment VerticalAlignment.Center
-                            CheckBox.isChecked state.hideOnStart
-                            CheckBox.margin (2, 0)
-                            CheckBox.onClick (fun _ -> dispatch HideOnStart)
+                        ToggleSwitch.create [
+                            ToggleSwitch.dock Dock.Top
+                            ToggleSwitch.content "Hide on start"
+                            ToggleSwitch.horizontalAlignment HorizontalAlignment.Center
+                            ToggleSwitch.verticalAlignment VerticalAlignment.Center
+                            ToggleSwitch.isChecked state.hideOnStart
+                            ToggleSwitch.margin (2, 0)
+                            ToggleSwitch.onChecked (fun _ -> dispatch (SetHideOnStart true))
+                            ToggleSwitch.onUnchecked (fun _ -> dispatch (SetHideOnStart false))
                         ]
                     ]
                 ]
+                
                 TextBlock.create [
                     TextBlock.dock Dock.Top
                     TextBlock.fontSize 48.0
                     TextBlock.verticalAlignment VerticalAlignment.Center
                     TextBlock.horizontalAlignment HorizontalAlignment.Center
-                    TextBlock.text $"""{if state.isRunning then "Running" else "Stopped"}"""
+                    TextBlock.text (if state.isRunning then "Running" else "Stopped")
                 ]
             ]
         ]
@@ -135,7 +152,7 @@ type MainWindow() as this =
 
         let update state msg =
             MainWindow.update state msg this
-        
+
         Elmish.Program.mkSimple (fun () -> MainWindow.init) update MainWindow.view
         |> Program.withHost this
         |> Program.withConsoleTrace
@@ -147,7 +164,7 @@ type App() =
 
     override this.Initialize() =
         this.Styles.Add (FluentTheme(baseUri = null, Mode = FluentThemeMode.Dark))
-
+       
     override this.OnFrameworkInitializationCompleted() =
         match this.ApplicationLifetime with
         | :? IClassicDesktopStyleApplicationLifetime as desktopLifetime ->

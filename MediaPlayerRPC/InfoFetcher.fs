@@ -18,12 +18,18 @@ type PlayerIsOpen =
     | No
 
 module InfoFetcher =
+    let isPlayerOpen () : bool =
+        not ((Process.GetProcessesByName "Microsoft.Media.Player")
+        |> Array.isEmpty)
+    
     let getTrackInfo () =
-        if not ((Process.GetProcessesByName "Microsoft.Media.Player") |> Array.isEmpty) then
+        if isPlayerOpen () then
             let session = GlobalSystemMediaTransportControlsSessionManager.RequestAsync().GetAwaiter().GetResult().GetCurrentSession()
             let songInfo = session.TryGetMediaPropertiesAsync().GetAwaiter().GetResult()
             let timelineInfo = session.GetTimelineProperties()
             let statusInfo = session.GetPlaybackInfo()
+            
+            printfn $"{songInfo.Title}, {timelineInfo.Position}, {statusInfo.PlaybackStatus}"
 
             let info =
                 { Title =

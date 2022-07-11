@@ -18,23 +18,31 @@ module Presence =
     
     client.Logger <- ConsoleLogger (LogLevel.Warning, true)
     client.OnReady.Add onReadyEventHandler
+    client.SkipIdenticalPresence <- true
+    
     match client.Initialize () with
     | true -> printfn "Connection initialised successfully"
     | false -> printfn "Connection failed!"
     
     assets.LargeImageKey <- "icon"
     
-    button.Label <- "Watch on YouTube"
+    button.Label <- "Play on YouTube"
             
     presence.Assets <- assets
     presence.Buttons <- [| button |]
 
     let clearPresence () =
-        client.ClearPresence ()
+        client.Deinitialize ()
 
     let setPresence () =
         match getTrackInfo () with
         | Yes res ->
+            try
+                client.Initialize ()
+            with
+                | :? DiscordRPC.Exceptions.UninitializedException -> true
+            |> ignore 
+            
             printfn $"{DateTime.Now + res.StartTime}"
 //            presence.Timestamps <- Timestamps ( DateTime.UtcNow + res.CurrentTime)
             presence.Details <- $"{res.Artist} - {res.Title}"
@@ -51,6 +59,6 @@ module Presence =
             | _ -> ()
             
             client.SetPresence presence
-        | No -> client.ClearPresence()
+        | No -> clearPresence ()
         
         Async.Sleep 1000 |> Async.RunSynchronously
