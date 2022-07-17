@@ -16,6 +16,7 @@ open FSharp.Data
 open FSharp.Data.JsonProvider
 open FSharp.Json
 open MediaPlayerRPC
+open Microsoft.Win32
 
 module MainWindow =
     let path = $"{__SOURCE_DIRECTORY__}./settings.json"
@@ -28,11 +29,18 @@ module MainWindow =
         
     let writeToJson (state: State) =
         use writer = new StreamWriter(path)
-        task {
+        backgroundTask {
             let json = Json.serialize state
             do! writer.WriteLineAsync json
-        } |> Task.WaitAll 
-        ()
+        } |> Task.WaitAll
+        
+    let setRunOnStartup (flag: bool) =
+        let rk = Registry.CurrentUser.OpenSubKey "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"
+        printfn $"{__SOURCE_DIRECTORY__}"
+        
+//        match flag with
+//        | true -> rk.SetValue ("MediaPlayerRPC", $"{__SOURCE_DIRECTORY__}", RegistryValueKind.String)
+//        | false -> rk.DeleteValue "MediaPlayerRPC"
         
     let init =
         { isRunning = false
@@ -61,10 +69,13 @@ module MainWindow =
             { state with isRunning = not state.isRunning }
         | SetRunOnStartup x ->
             let newState = { state with runOnStartup = x }
+            setRunOnStartup x
             writeToJson newState
             newState
         | SetHideOnStart x ->
-            { state with hideOnStart = x }
+            let newState = { state with hideOnStart = x }
+            writeToJson newState
+            newState
         | Hide ->
             windowService.Hide ()
             state
