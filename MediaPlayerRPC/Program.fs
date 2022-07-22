@@ -28,9 +28,9 @@ module MainWindow =
         let rk = Registry.CurrentUser.OpenSubKey "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"
         printfn $"{__SOURCE_DIRECTORY__}"
         
-//        match flag with
-//        | true -> rk.SetValue ("MediaPlayerRPC", $"{__SOURCE_DIRECTORY__}", RegistryValueKind.String)
-//        | false -> rk.DeleteValue "MediaPlayerRPC"
+        match flag with
+        | true -> rk.SetValue ("MediaPlayerRPC", $"{__SOURCE_DIRECTORY__}", RegistryValueKind.String)
+        | false -> rk.DeleteValue "MediaPlayerRPC"
         
     let init =
         let settings = Database.getData ()
