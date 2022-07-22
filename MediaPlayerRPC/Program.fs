@@ -19,20 +19,10 @@ open MediaPlayerRPC
 open Microsoft.Win32
 
 module MainWindow =
-    let path = $"{__SOURCE_DIRECTORY__}./settings.json"
-    let settings = JsonValue.Load $"{__SOURCE_DIRECTORY__}./settings.json"
-    
     type State =
-        { isRunning: bool
-          runOnStartup: bool
-          hideOnStart: bool }
-        
-    let writeToJson (state: State) =
-        use writer = new StreamWriter(path)
-        backgroundTask {
-            let json = Json.serialize state
-            do! writer.WriteLineAsync json
-        } |> Task.WaitAll
+        { IsRunning: bool
+          RunOnStartup: bool
+          HideOnStart: bool }
         
     let setRunOnStartup (flag: bool) =
         let rk = Registry.CurrentUser.OpenSubKey "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"
@@ -43,9 +33,10 @@ module MainWindow =
 //        | false -> rk.DeleteValue "MediaPlayerRPC"
         
     let init =
-        { isRunning = false
-          runOnStartup = settings.GetProperty "runOnStartup" |> JsonExtensions.AsBoolean 
-          hideOnStart = settings.GetProperty "hideOnStart" |> JsonExtensions.AsBoolean }
+        let settings = Database.getData ()
+        { IsRunning = false
+          RunOnStartup = settings.RunOnStartup 
+          HideOnStart = settings.HideOnStart }
         
     type Msg =
         | SwitchRunning
@@ -56,7 +47,7 @@ module MainWindow =
     let update (msg: Msg) (state: State) (windowService: HostWindow) : State =
         match msg with
         | SwitchRunning ->
-            let isRunning = not state.isRunning
+            let isRunning = not state.IsRunning
             printfn $"{isRunning}"
             async {
                 match isRunning with
@@ -66,15 +57,19 @@ module MainWindow =
                 | false ->
                     printfn "stopped"
             } |> Async.Start
-            { state with isRunning = not state.isRunning }
+            { state with IsRunning = not state.IsRunning }
         | SetRunOnStartup x ->
-            let newState = { state with runOnStartup = x }
+            let newState = { state with RunOnStartup = x }
             setRunOnStartup x
-            writeToJson newState
+            Database.insertData { Id = 1
+                                  RunOnStartup = newState.RunOnStartup
+                                  HideOnStart = newState.HideOnStart }
             newState
         | SetHideOnStart x ->
-            let newState = { state with hideOnStart = x }
-            writeToJson newState
+            let newState = { state with HideOnStart = x }
+            Database.insertData { Id = 1
+                                  RunOnStartup = newState.RunOnStartup
+                                  HideOnStart = newState.HideOnStart }
             newState
         | Hide ->
             windowService.Hide ()
@@ -93,14 +88,14 @@ module MainWindow =
                     StackPanel.children [
                         Button.create [
                             Button.dock Dock.Bottom
-                            Button.content (if state.isRunning then "Stop" else "Start")
+                            Button.content (if state.IsRunning then "Stop" else "Start")
                             Button.verticalAlignment VerticalAlignment.Center
                             Button.horizontalAlignment HorizontalAlignment.Center
                             Button.onClick (fun _ -> dispatch SwitchRunning )
                         ]
                         Button.create [
                             Button.dock Dock.Bottom
-                            Button.isVisible state.isRunning
+                            Button.isVisible state.IsRunning
                             Button.content "Hide"
                             Button.verticalAlignment VerticalAlignment.Center
                             Button.horizontalAlignment HorizontalAlignment.Center
@@ -120,7 +115,7 @@ module MainWindow =
                             ToggleSwitch.content "Run on startup"
                             ToggleSwitch.horizontalAlignment HorizontalAlignment.Center
                             ToggleSwitch.verticalAlignment VerticalAlignment.Center
-                            ToggleSwitch.isChecked state.runOnStartup
+                            ToggleSwitch.isChecked state.RunOnStartup
                             ToggleSwitch.margin (2, 0)
                             ToggleSwitch.onChecked (fun _ -> dispatch (SetRunOnStartup true))
                             ToggleSwitch.onUnchecked (fun _ -> dispatch (SetRunOnStartup false))
@@ -130,7 +125,7 @@ module MainWindow =
                             ToggleSwitch.content "Hide on start"
                             ToggleSwitch.horizontalAlignment HorizontalAlignment.Center
                             ToggleSwitch.verticalAlignment VerticalAlignment.Center
-                            ToggleSwitch.isChecked state.hideOnStart
+                            ToggleSwitch.isChecked state.HideOnStart
                             ToggleSwitch.margin (2, 0)
                             ToggleSwitch.onChecked (fun _ -> dispatch (SetHideOnStart true))
                             ToggleSwitch.onUnchecked (fun _ -> dispatch (SetHideOnStart false))
@@ -143,7 +138,7 @@ module MainWindow =
                     TextBlock.fontSize 48.0
                     TextBlock.verticalAlignment VerticalAlignment.Center
                     TextBlock.horizontalAlignment HorizontalAlignment.Center
-                    TextBlock.text (if state.isRunning then "Running" else "Stopped")
+                    TextBlock.text (if state.IsRunning then "Running" else "Stopped")
                 ]
             ]
         ]

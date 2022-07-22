@@ -8,3 +8,5 @@ riderModule.iml
 .ionide/
 .vscode/
 .vs/
+
+*.db

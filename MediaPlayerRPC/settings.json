@@ -1,5 +1,5 @@
 {
-  "isRunning": false,
-  "runOnStartup": false,
-  "hideOnStart": true
+  "IsRunning": false,
+  "RunOnStartup": false,
+  "HideOnStart": true
 }

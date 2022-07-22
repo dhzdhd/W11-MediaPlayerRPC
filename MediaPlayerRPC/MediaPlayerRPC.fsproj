@@ -9,6 +9,7 @@
 
     <ItemGroup>
         <Compile Include="Constants.fs" />
+        <Compile Include="Database.fs" />
         <Compile Include="InfoFetcher.fs" />
         <Compile Include="Presence.fs" />
         <Compile Include="Program.fs" />
@@ -26,6 +27,7 @@
         <PackageReference Include="JaggerJo.Avalonia.FuncUI" Version="0.5.0-beta" />
         <PackageReference Include="JaggerJo.Avalonia.FuncUI.DSL" Version="0.5.0-beta" />
         <PackageReference Include="JaggerJo.Avalonia.FuncUI.Elmish" Version="0.5.0-beta" />
+        <PackageReference Include="LiteDB.FSharp" Version="2.16.0" />
     </ItemGroup>
 
     <ItemGroup>
