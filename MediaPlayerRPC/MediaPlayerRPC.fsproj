@@ -14,7 +14,6 @@
         <Compile Include="Presence.fs" />
         <Compile Include="Program.fs" />
         <Content Include="Assets\icon.svg" />
-        <Content Include="settings.json" />
     </ItemGroup>
 
     <ItemGroup>
