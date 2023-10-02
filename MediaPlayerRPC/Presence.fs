@@ -12,6 +12,7 @@ module Presence =
     let assets = Assets ()
     let button = Button ()
     let presence = RichPresence ()
+    let mutable oldState = No
     
     let onReadyEventHandler (_: ReadyMessage) =
         printfn "Client ready"
@@ -27,19 +28,31 @@ module Presence =
         exit 0
     
     assets.LargeImageKey <- "icon"
-    
     button.Label <- "Play on YouTube"
-            
     presence.Assets <- assets
     
     let clearPresence () =
         client.ClearPresence ()
 
-    let setPresence () =        
+    let setPresence () =
         match getTrackInfo () with
         | Yes res ->
-            printfn $"{DateTime.Now + res.StartTime}"
-//            presence.Timestamps <- Timestamps ( DateTime.UtcNow + res.CurrentTime)
+            // match oldState with
+            // | Yes old ->
+            //     match old.EndTime = res.EndTime with
+            //     | true ->
+            //         if res.CurrentTime = TimeSpan.Zero then
+            //             presence.Timestamps <- Timestamps.FromTimeSpan res.CurrentTime
+            //     | false ->
+            //         oldState <- getTrackInfo () 
+            //         presence.Timestamps <- Timestamps.FromTimeSpan res.CurrentTime
+            // | No ->
+            //     oldState <- getTrackInfo () 
+            //     presence.Timestamps <- Timestamps.FromTimeSpan res.CurrentTime
+            
+            // if (res.CurrentTime +  TimeSpan.FromSeconds 10) > res.EndTime then
+            presence.Timestamps <- Timestamps.FromTimeSpan res.RemainingTime
+                
             presence.Details <- $"{res.Artist} - {res.Title}"
             presence.Buttons <- [| button |]
             assets.LargeImageText <- $"{res.Album}"
@@ -53,7 +66,7 @@ module Presence =
                 assets.SmallImageKey <- "pause"
                 assets.SmallImageText <- "Paused"
             | _ -> ()
-            
+                
             client.SetPresence presence
         | No ->
             presence.Details <- "Idle"
@@ -63,4 +76,3 @@ module Presence =
             presence.Buttons <- [||]
             
             client.SetPresence presence
-        

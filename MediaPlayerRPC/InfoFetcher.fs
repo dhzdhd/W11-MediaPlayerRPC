@@ -2,6 +2,7 @@
 
 open System
 open System.Diagnostics
+open type Windows.Media.MediaPlaybackAutoRepeatMode
 open Windows.Media.Control
 
 type Info =
@@ -11,6 +12,8 @@ type Info =
       StartTime: TimeSpan
       EndTime: TimeSpan
       CurrentTime: TimeSpan
+      RemainingTime: TimeSpan
+      RepeatMode: Windows.Media.MediaPlaybackAutoRepeatMode option
       PlaybackStatus: GlobalSystemMediaTransportControlsSessionPlaybackStatus }
     
 type PlayerIsOpen =
@@ -30,6 +33,7 @@ module InfoFetcher =
             let timelineInfo = session.GetTimelineProperties()
             let statusInfo = session.GetPlaybackInfo()
             
+            printfn $"{timelineInfo.LastUpdatedTime}"
             printfn $"{songInfo.Title}, {songInfo.Artist}, {songInfo.AlbumArtist}, {songInfo.AlbumTitle} {songInfo.PlaybackType.Value}"
 
             let info =
@@ -51,6 +55,8 @@ module InfoFetcher =
                   StartTime = timelineInfo.StartTime
                   EndTime = timelineInfo.EndTime
                   CurrentTime = timelineInfo.Position
+                  RemainingTime = timelineInfo.EndTime - timelineInfo.Position
+                  RepeatMode = Option.ofNullable statusInfo.AutoRepeatMode
                   PlaybackStatus = statusInfo.PlaybackStatus }
         
             Yes info

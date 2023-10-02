@@ -22,7 +22,7 @@ module Main =
           HideOnStart: bool }
         
     let setRunOnStartup (flag: bool) =
-        let rk = Registry.CurrentUser.OpenSubKey "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"
+        let rk = Registry.CurrentUser.OpenSubKey ("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true)
         printfn $"{__SOURCE_DIRECTORY__}"
         
         match flag with
@@ -31,6 +31,8 @@ module Main =
         
     let init =
         let settings = Database.getData ()
+        if settings.HideOnStart then
+            Presence.setPresence ()
         { IsRunning = false
           RunOnStartup = settings.RunOnStartup 
           HideOnStart = settings.HideOnStart }
@@ -55,7 +57,7 @@ module Main =
                     while not state.IsRunning && not token.IsCancellationRequested do
                         printfn "running"
                         Presence.setPresence ()
-                        Async.Sleep 1000 |> Async.RunSynchronously
+                        Async.Sleep 6000 |> Async.RunSynchronously
                 }
                 Async.Start (work, cancellationToken = token)
             else
