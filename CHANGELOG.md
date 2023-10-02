@@ -1,3 +1,18 @@
+# Changelog
+
+## v0.1.0 prerelease | 02-10-2023
+
+### Additions
+
+- Add run on startup feature.
+- (Dev) Upgrade to .NET 7 and latest Avalonia.FuncUI.
+- Added timestamp to presence.
+
+### Fixes
+
+- Fixed broken checkboxes.
+- Fixed broken stop button (used to not end presence on Discord).
+
 ## v0.0.3 prerelease | 22-7-2022
 
 ### Additions
