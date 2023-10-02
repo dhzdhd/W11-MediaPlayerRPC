@@ -1,5 +1,7 @@
 ﻿namespace MediaPlayerRPC
 
+open System.Threading
+open System.Threading.Tasks
 open Avalonia
 open Avalonia.FuncUI.Hosts
 open Elmish
@@ -38,20 +40,33 @@ module Main =
         | SetRunOnStartup of bool
         | SetHideOnStart of bool
         | Hide
-    
+
+    let mutable cts = new CancellationTokenSource ()
+        
     let update (msg: Msg) (state: State) (windowService: HostWindow) : State =
         match msg with
         | SwitchRunning ->
             let isRunning = not state.IsRunning
             printfn $"{isRunning}"
-            async {
-                match isRunning with
-                | true ->
-                    printfn "running"
-                    while isRunning do Presence.setPresence ()
-                | false ->
-                    printfn "stopped"
-            } |> Async.Start
+            
+            let token = cts.Token
+            
+            if isRunning then
+                let work = async {
+                    while not state.IsRunning && not token.IsCancellationRequested do
+                        printfn "running"
+                        Presence.setPresence ()
+                        Async.Sleep 1000 |> Async.RunSynchronously
+                }
+                Async.Start (work, cancellationToken = token)
+            else
+                cts.Cancel ()
+                cts.Dispose ()
+                cts <- new CancellationTokenSource ()
+                printfn "stopped"
+                
+                Presence.clearPresence ()
+
             { state with IsRunning = not state.IsRunning }
         | SetRunOnStartup x ->
             let newState = { state with RunOnStartup = x }

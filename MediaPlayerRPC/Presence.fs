@@ -31,8 +31,11 @@ module Presence =
     button.Label <- "Play on YouTube"
             
     presence.Assets <- assets
+    
+    let clearPresence () =
+        client.ClearPresence ()
 
-    let setPresence () =
+    let setPresence () =        
         match getTrackInfo () with
         | Yes res ->
             printfn $"{DateTime.Now + res.StartTime}"
@@ -61,4 +64,3 @@ module Presence =
             
             client.SetPresence presence
         
-        Async.Sleep 1000 |> Async.RunSynchronously
