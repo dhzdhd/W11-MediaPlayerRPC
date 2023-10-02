@@ -16,7 +16,6 @@ module Database =
     let getData () =
         match (settings.Count() <> 0) with
         | true ->
-            printfn "full"
             let data =
                 settings.FindAll ()
                 |> Seq.toList

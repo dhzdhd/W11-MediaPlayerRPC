@@ -47,7 +47,6 @@ module Main =
         match msg with
         | SwitchRunning ->
             let isRunning = not state.IsRunning
-            printfn $"{isRunning}"
             
             let token = cts.Token
             
