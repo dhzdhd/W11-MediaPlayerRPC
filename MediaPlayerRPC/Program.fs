@@ -1,24 +1,19 @@
 ﻿namespace MediaPlayerRPC
 
-open System.IO
-open System.Threading.Tasks
 open Avalonia
-open Avalonia.Controls
-open Avalonia.FuncUI.Components.Hosts
-open Avalonia.Layout
-open Avalonia.Themes.Fluent
+open Avalonia.FuncUI.Hosts
 open Elmish
-open Avalonia.FuncUI.DSL
-open Avalonia.FuncUI
 open Avalonia.FuncUI.Elmish
 open Avalonia.Controls.ApplicationLifetimes
-open FSharp.Data
-open FSharp.Data.JsonProvider
-open FSharp.Json
 open MediaPlayerRPC
 open Microsoft.Win32
+open Avalonia.Themes.Fluent
+open Avalonia.FuncUI.DSL
+open Avalonia.FuncUI
+open Avalonia.Controls
+open Avalonia.Layout
 
-module MainWindow =
+module Main =
     type State =
         { IsRunning: bool
           RunOnStartup: bool
@@ -149,26 +144,21 @@ type MainWindow() as this =
         base.Title <- "Media Player RPC"
         base.Height <- 400.0
         base.Width <- 400.0
-
-#if DEBUG     
-        this.VisualRoot.VisualRoot.Renderer.DrawFps <- true
-        this.VisualRoot.VisualRoot.Renderer.DrawDirtyRects <- true
-#endif
-
+    
         let update state msg =
-            MainWindow.update state msg this
-
-        Elmish.Program.mkSimple (fun () -> MainWindow.init) update MainWindow.view
+            Main.update state msg this
+        
+        Elmish.Program.mkSimple (fun () -> Main.init) update Main.view
         |> Program.withHost this
         |> Program.withConsoleTrace
         |> Program.run
-
         
 type App() =
     inherit Application()
 
     override this.Initialize() =
-        this.Styles.Add (FluentTheme(baseUri = null, Mode = FluentThemeMode.Dark))
+         this.Styles.Add (FluentTheme())
+         this.RequestedThemeVariant <- Styling.ThemeVariant.Dark
        
     override this.OnFrameworkInitializationCompleted() =
         match this.ApplicationLifetime with
