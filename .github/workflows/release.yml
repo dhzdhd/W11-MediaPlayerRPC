@@ -26,12 +26,12 @@ jobs:
         run: |
           cd .\MediaPlayerRPC\
           mkdir App
-          cd .\bin\Release\net7.0-windows10.0.22000.0
+          cd .\bin\Release\net7.0-windows10.0.22000.0\win10-x64
+          7z -tZip a ..\..\..\..\App\MediaPlayerRPC.zip .\*
 
-          echo Directory tree 
+      - name: Directory tree
+        run: |
           tree
-          
-          7z -tZip a ..\..\..\App\MediaPlayerRPC.zip .\*
 
       - name: Create release
         uses: softprops/action-gh-release@v1
