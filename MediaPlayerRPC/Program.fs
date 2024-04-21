@@ -1,9 +1,12 @@
 ﻿namespace MediaPlayerRPC
 
+open System.Reflection
 open System.Threading
 open System.Threading.Tasks
 open Avalonia
 open Avalonia.FuncUI.Hosts
+open Avalonia.Media
+open Avalonia.Media.Imaging
 open Elmish
 open Avalonia.FuncUI.Elmish
 open Avalonia.Controls.ApplicationLifetimes
@@ -160,6 +163,8 @@ type MainWindow() as this =
         base.Title <- "Media Player RPC"
         base.Height <- 400.0
         base.Width <- 400.0
+        base.Icon <- WindowIcon "Assets/icon.png"
+        base.TransparencyLevelHint <- [WindowTransparencyLevel.Mica; WindowTransparencyLevel.Blur]
     
         let update state msg =
             Main.update state msg this

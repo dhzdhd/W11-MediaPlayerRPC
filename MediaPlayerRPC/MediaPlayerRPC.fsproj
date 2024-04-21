@@ -28,6 +28,10 @@
         <PackageReference Include="FSharp.Data.JsonSchema" Version="2.0.2" />
         <PackageReference Include="FSharp.Json" Version="0.4.1" />
         <PackageReference Include="LiteDB.FSharp" Version="2.16.0" />
+
+        <Content Include="Assets\icon.png">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>
@@ -35,7 +39,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <AvaloniaResource Include="Assets\*" />
+        <AvaloniaResource Include="Assets\**" />
     </ItemGroup>
     
 </Project>
