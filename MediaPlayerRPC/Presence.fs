@@ -55,6 +55,7 @@ module Presence =
                 
             presence.Details <- $"{res.Artist} - {res.Title}"
             presence.Buttons <- [| button |]
+            // assets.LargeImageKey <- "https://upload.wikimedia.org/wikipedia/commons/6/63/Icon_Bird_512x512.png"
             assets.LargeImageText <- $"{res.Album}"
             button.Url <- $"https://www.youtube.com/results?search_query={res.Artist.Replace (' ', '+')}+{res.Title.Replace (' ', '+')}"
             
