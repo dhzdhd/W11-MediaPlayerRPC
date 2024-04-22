@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <OutputType>Exe</OutputType>
+        <OutputType>WinExe</OutputType>
         <TargetFramework>net8.0-windows10.0.22000.0</TargetFramework>
         <RuntimeIdentifier>win-x64</RuntimeIdentifier>
         <UseWpf>true</UseWpf>
@@ -41,5 +41,19 @@
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
     </ItemGroup>
+
+<!--    <PropertyGroup>-->
+<!--        <NSubsysTasksPath Condition="'$(NSubsysTasksPath)' == ''">$(MSBuildThisFileDirectory)\NSubsys.Tasks.dll</NSubsysTasksPath>-->
+<!--    </PropertyGroup>-->
+
+<!--    <UsingTask TaskName="NSubsys.Tasks.NSubsys" AssemblyFile="$(NSubsysTasksPath)" />-->
+
+<!--    <Target Name="CustomAfterBuild" AfterTargets="Build" Condition="$(RuntimeIdentifier.StartsWith('win'))">-->
+<!--        <NSubsys TargetFile="$(OutputPath)$(AssemblyName)$(_NativeExecutableExtension)" />-->
+<!--    </Target>-->
+
+<!--    <Target Name="CustomAfterPublish" AfterTargets="Publish" Condition="$(RuntimeIdentifier.StartsWith('win'))">-->
+<!--        <NSubsys TargetFile="$(PublishDir)$(AssemblyName)$(_NativeExecutableExtension)" />-->
+<!--    </Target>-->
     
 </Project>

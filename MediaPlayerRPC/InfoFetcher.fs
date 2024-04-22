@@ -21,14 +21,14 @@ type PlayerIsOpen =
     | No
 
 module InfoFetcher =
-    let session = GlobalSystemMediaTransportControlsSessionManager.RequestAsync().GetAwaiter().GetResult().GetCurrentSession()
-
     let isPlayerOpen () : bool =
         not ((Process.GetProcessesByName "Microsoft.Media.Player")
         |> Array.isEmpty)
-    
+
     let getTrackInfo () =
-        if isPlayerOpen () then
+        let session = GlobalSystemMediaTransportControlsSessionManager.RequestAsync().GetAwaiter().GetResult().GetCurrentSession()
+        
+        if isPlayerOpen () && session.SourceAppUserModelId.Contains "Microsoft.ZuneMusic" then
             let songInfo = session.TryGetMediaPropertiesAsync().GetAwaiter().GetResult()
             let timelineInfo = session.GetTimelineProperties()
             let statusInfo = session.GetPlaybackInfo()

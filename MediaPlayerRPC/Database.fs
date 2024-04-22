@@ -20,10 +20,10 @@ module Database =
                 settings.FindAll ()
                 |> Seq.toList
                 |> List.head
-            printfn $"getData {data}"
+            // printfn $"getData {data}"
             data
         | false ->
-            printfn "empty"
+            // printfn "empty"
             { Id = 1; RunOnStartup = false; HideOnStart = false }
         
     let insertData (state: Settings) =

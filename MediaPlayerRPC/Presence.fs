@@ -72,7 +72,7 @@ module Presence =
             presence.Details <- "Idle"
             assets.SmallImageKey <- "idle"
             assets.SmallImageText <- "Idle"
-            
+            presence.Timestamps <- null
             presence.Buttons <- [||]
             
             client.SetPresence presence
