@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://github.com/dhzdhd/W11-MediaPlayerRPC/blob/master/MediaPlayerRPC/Assets/icon.png"  height="150">
+</p>
+
 # W11 Media Player RPC
 
 This app enables rich presence for the new Media Player shipped with the February  Windows 11 update.
