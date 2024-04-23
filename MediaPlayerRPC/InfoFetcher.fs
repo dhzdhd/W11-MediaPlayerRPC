@@ -5,6 +5,7 @@ open System.Diagnostics
 open type Windows.Media.MediaPlaybackAutoRepeatMode
 open Windows.Media.Control
 open FsHttp
+open Windows.Media.Playback
 
 type Info =
     { Title: string
@@ -35,7 +36,14 @@ module InfoFetcher =
                   "country", "us"
                   "entity", "song"
                   "media", "music" ]
-        } |> Request.sendAsync |> Async.RunSynchronously |> Response.toJson |> fun json -> json?results.[0]?artworkUrl100.GetString()
+        }
+        |> Request.sendAsync
+        |> Async.RunSynchronously
+        |> Response.toJson
+        |> fun json ->
+                match json?resultCount.GetInt32() with
+                | 0 -> Option.None
+                | _ -> Some (json?results.[0]?artworkUrl100.GetString())
         
     let getTrackInfo () =
         let session = GlobalSystemMediaTransportControlsSessionManager.RequestAsync().GetAwaiter().GetResult().GetCurrentSession()

@@ -51,8 +51,7 @@ module Presence =
             //     presence.Timestamps <- Timestamps.FromTimeSpan res.CurrentTime
             
             // if (res.CurrentTime +  TimeSpan.FromSeconds 10) > res.EndTime then
-            presence.Timestamps <- Timestamps.FromTimeSpan res.RemainingTime
-                
+                            
             presence.Details <- $"{res.Artist} - {res.Title}"
             presence.Buttons <- [| button |]
             
@@ -67,16 +66,22 @@ module Presence =
                         | Some albumArt -> albumArt.Url
                         | None ->
                             let url = InfoFetcher.getAlbumArt title
-                            printfn $"{url}"
-                            Database.upsertAlbumArts { Id = 1; Title = title; Url = url } |> ignore
-                            url
-                    assets.LargeImageKey <- InfoFetcher.getAlbumArt title
+                            
+                            match url with
+                            | Some url -> 
+                                printfn $"{url}"
+                                Database.upsertAlbumArts { Id = 1; Title = title; Url = url } |> ignore
+                                url
+                            | None -> "icon"
+                    assets.LargeImageKey <- albumArt
             
             match res.PlaybackStatus with
             | GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing ->
+                presence.Timestamps <- Timestamps.FromTimeSpan res.RemainingTime
                 assets.SmallImageKey <- "play"
                 assets.SmallImageText <- "Playing"
             | GlobalSystemMediaTransportControlsSessionPlaybackStatus.Paused ->
+                presence.Timestamps <- null
                 assets.SmallImageKey <- "pause"
                 assets.SmallImageText <- "Paused"
             | _ -> ()
