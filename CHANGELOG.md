@@ -1,10 +1,24 @@
 # Changelog
 
+## v0.2.0 prerelease | 23-04-2024
+
+### Additions
+
+- Added Dynamic album art fetched from the Apple Music API (might break at times).
+- Added Mica design to the window to match Windows 11.
+
+### Fixes / Improvements
+
+- Removed the console popping up when running the app.
+- Fixed timestamp showing up when the RPC was in idle mode.
+- Improved player detection. The RPC should now not show up for media being played in other apps.
+-  (Dev) Upgraded .NET to version 8
+
 ## v0.1.0 prerelease | 02-10-2023
 
 ### Additions
 
-- Add run on startup feature.
+- Added run on startup feature.
 - (Dev) Upgrade to .NET 7 and latest Avalonia.FuncUI.
 - Added timestamp to presence.
 
