@@ -2,7 +2,8 @@
 
 on:
   push:
-    branches: [ stable ]
+    tags:
+      - "v*.*.*"
 
   workflow_dispatch:
 
@@ -26,7 +27,7 @@ jobs:
         run: |
           cd .\MediaPlayerRPC\
           mkdir App
-          cd .\bin\Release\net7.0-windows10.0.22000.0\win10-x64
+          cd .\bin\Release\net8.0-windows10.0.22000.0\win10-x64
           7z -tZip a ..\..\..\..\App\MediaPlayerRPC.zip .\*
 
       - name: Directory tree
@@ -34,11 +35,9 @@ jobs:
           tree
 
       - name: Create release
-        uses: softprops/action-gh-release@v1
-        #         if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
         with:
           name: MediaPlayerRPC
-          tag_name: v0.1.0
           prerelease: true
           generate_release_notes: true
           files: ./MediaPlayerRPC/App/*
