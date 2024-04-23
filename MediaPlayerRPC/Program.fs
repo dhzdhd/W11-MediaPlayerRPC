@@ -1,12 +1,8 @@
 ﻿namespace MediaPlayerRPC
 
-open System.Reflection
 open System.Threading
-open System.Threading.Tasks
 open Avalonia
 open Avalonia.FuncUI.Hosts
-open Avalonia.Media
-open Avalonia.Media.Imaging
 open Elmish
 open Avalonia.FuncUI.Elmish
 open Avalonia.Controls.ApplicationLifetimes
@@ -14,7 +10,6 @@ open MediaPlayerRPC
 open Microsoft.Win32
 open Avalonia.Themes.Fluent
 open Avalonia.FuncUI.DSL
-open Avalonia.FuncUI
 open Avalonia.Controls
 open Avalonia.Layout
 
@@ -33,7 +28,7 @@ module Main =
         | false -> rk.DeleteValue "MediaPlayerRPC"
         
     let init =
-        let settings = Database.getData ()
+        let settings = Database.getSettings ()
         if settings.HideOnStart then
             Presence.setPresence ()
         { IsRunning = false
@@ -75,15 +70,15 @@ module Main =
         | SetRunOnStartup x ->
             let newState = { state with RunOnStartup = x }
             setRunOnStartup x
-            Database.insertData { Id = 1
-                                  RunOnStartup = newState.RunOnStartup
-                                  HideOnStart = newState.HideOnStart }
+            Database.upsertSettings { Id = 1
+                                      RunOnStartup = newState.RunOnStartup
+                                      HideOnStart = newState.HideOnStart } |> ignore
             newState
         | SetHideOnStart x ->
             let newState = { state with HideOnStart = x }
-            Database.insertData { Id = 1
-                                  RunOnStartup = newState.RunOnStartup
-                                  HideOnStart = newState.HideOnStart }
+            Database.upsertSettings { Id = 1
+                                      RunOnStartup = newState.RunOnStartup
+                                      HideOnStart = newState.HideOnStart } |> ignore
             newState
         | Hide ->
             windowService.Hide ()

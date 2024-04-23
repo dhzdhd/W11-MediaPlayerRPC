@@ -4,6 +4,7 @@ open System
 open System.Diagnostics
 open type Windows.Media.MediaPlaybackAutoRepeatMode
 open Windows.Media.Control
+open FsHttp
 
 type Info =
     { Title: string
@@ -25,6 +26,17 @@ module InfoFetcher =
         not ((Process.GetProcessesByName "Microsoft.Media.Player")
         |> Array.isEmpty)
 
+    let getAlbumArt search =
+        http {
+            GET "https://itunes.apple.com/search"
+            query
+                [ "term", search
+                  "limit", "1"
+                  "country", "us"
+                  "entity", "song"
+                  "media", "music" ]
+        } |> Request.sendAsync |> Async.RunSynchronously |> Response.toJson |> fun json -> json?results.[0]?artworkUrl100.GetString()
+        
     let getTrackInfo () =
         let session = GlobalSystemMediaTransportControlsSessionManager.RequestAsync().GetAwaiter().GetResult().GetCurrentSession()
         

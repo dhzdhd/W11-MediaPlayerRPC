@@ -55,9 +55,22 @@ module Presence =
                 
             presence.Details <- $"{res.Artist} - {res.Title}"
             presence.Buttons <- [| button |]
-            // assets.LargeImageKey <- "https://upload.wikimedia.org/wikipedia/commons/6/63/Icon_Bird_512x512.png"
-            assets.LargeImageText <- $"{res.Album}"
+            
             button.Url <- $"https://www.youtube.com/results?search_query={res.Artist.Replace (' ', '+')}+{res.Title.Replace (' ', '+')}"
+            
+            assets.LargeImageText <- $"{res.Album}"
+            match res.Title with
+                | "Unknown Song" -> assets.LargeImageKey <-  "icon"
+                | title ->
+                    let albumArt =
+                        match Database.getAlbumArts title with
+                        | Some albumArt -> albumArt.Url
+                        | None ->
+                            let url = InfoFetcher.getAlbumArt title
+                            printfn $"{url}"
+                            Database.upsertAlbumArts { Id = 1; Title = title; Url = url } |> ignore
+                            url
+                    assets.LargeImageKey <- InfoFetcher.getAlbumArt title
             
             match res.PlaybackStatus with
             | GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing ->
