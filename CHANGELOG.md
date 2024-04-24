@@ -1,6 +1,17 @@
 # Changelog
 
-## v0.2.0 prerelease | 23-04-2024
+## v0.2.2 prerelease | 24-04-2024
+
+### Additions
+
+- (Dev) Started work on API to fetch higher quality album art.
+
+### Fixes
+
+- Fixed timestamp showing up when song is paused.
+- Fixed error on fetching album art from iTunes API.
+
+## v0.2.1 prerelease | 23-04-2024
 
 ### Additions
 
