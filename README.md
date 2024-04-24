@@ -14,6 +14,7 @@ This app enables rich presence for the new Media Player shipped with the Februar
 
 ## Known bugs
 - Timestamps are buggy and lag by a few seconds.
+- Sometimes, the album details are read as null values and display as Unknown Artist/Album.
 
 ## Contributing
 Contributions are welcome! \
