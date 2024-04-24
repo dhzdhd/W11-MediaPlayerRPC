@@ -1,8 +1,7 @@
 import json
 import pulumi
 import pulumi_aws as aws
-import pulumi_aws_apigateway as apigateway
-import pulumi_docker as docker
+import pulumi_awsx as awsx
 
 role = aws.iam.Role(
     "role",
@@ -20,33 +19,30 @@ role = aws.iam.Role(
             ],
         }
     ),
-    managed_policy_arns=[aws.iam.ManagedPolicy.AWS_LAMBDA_BASIC_EXECUTION_ROLE],
+    managed_policy_arns=[aws.iam.ManagedPolicy.AWS_LAMBDA_EXECUTE],
 )
 
-image = docker.Image(
-    "app-image",
-    # build=docker.DockerBuild(context="app/Dockerfile"),
-    image_name="ghcr.io/dhzdhd/w11-mediaplayerrpc:latest",
-    registry=docker.ImageRegistry(
-        server="ghcr.io",
-        username=pulumi.Config("github").require("dhzdhd"),
+repo = awsx.ecr.Repository("repo", force_delete=True)
+image = awsx.ecr.Image(
+    "image",
+    awsx.ecr.ImageArgs(
+        repository_url=repo.url,
+        context="../app/",
+        platform="linux/amd64",
     ),
-    skip_push=False,
 )
 
 fn = aws.lambda_.Function(
     "fn",
-    timeout=300,
-    role=role.arn,
     package_type="Image",
-    image_uri=image.base_image_name,
+    role=role.arn,
+    timeout=500,
+    image_uri=image.image_uri,
 )
 
-api = apigateway.RestAPI(
-    "api",
-    routes=[
-        apigateway.RouteArgs(path="/", method=apigateway.Method.GET, event_handler=fn),
-    ],
+api = aws.lambda_.FunctionUrl(
+    "fn_url", function_name=fn.name, authorization_type="NONE"
 )
 
-pulumi.export("url", api.url)
+pulumi.export("ECR repository URL", repo.url)
+pulumi.export("Lambda URL", api.function_url)

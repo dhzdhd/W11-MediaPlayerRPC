@@ -1,1 +1,7 @@
-boto3
+boto3==1.34.90
+fastapi[all]==0.110.2
+uvicorn==0.29.0
+mangum==0.17.0
+ytmusicapi==1.6.0
+aiohttp==3.9.5
+result==0.16.1
